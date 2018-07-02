@@ -15,6 +15,7 @@ class Sampler
 
     Vector3[] pos = null;
     Quaternion[] quat =null;
+    Matrix4x4[] transMat = null;
 
     public Sampler( string name,float frameRate,float length)
     {
@@ -25,10 +26,18 @@ class Sampler
         this.dt = 1 / frameRate;
         pos = new Vector3[count];
         quat = new Quaternion[count];
+        transMat = new Matrix4x4[count];
            
 
     }
+    public void finish()
+    {
+        for(int idx = 0; idx < count; idx++)
+        {
+            transMat[idx] = Matrix4x4.TRS( pos[idx],quat[idx],Vector3.one );
+        }
 
+    }
     void calcCurve(AnimationCurve curve)
     {
         int count = Mathf.RoundToInt(frameRate * length) + 1;
@@ -180,6 +189,12 @@ public class AnimEditor : Editor
 
 
             }
+
+            foreach(var kv in animMap)
+            {
+                kv.Value.finish();
+            }
+
             EditorGUILayout.EndScrollView();
 
          
